@@ -1,0 +1,31 @@
+{{ define "base" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='/static/css/main.css' rel='stylesheet' >
+    <title>Document</title>
+</head>
+
+
+<body>
+    
+    <div class="grid-section">
+        <div class="padding-grid"></div>
+        <div class="template">
+            {{ block "content" . }}
+            {{ end }}
+        </div>
+        <div class="padding-grid"></div>
+    </div>
+        
+    <footer>
+        
+    </footer> 
+</body>
+ <script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+<script defer src="https://kit.fontawesome.com/8c6e47f935.js" crossorigin="anonymous"></script>
+
+</html>
+{{ end }}
