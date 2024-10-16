@@ -16,6 +16,8 @@ func (app *Application) Routes() http.Handler {
 
 	// register routes
 	mux.Get("/", app.RenderAccueil)
+	mux.Post("/video/id", app.PostVideoId)
+	mux.Get("/download/{name}", app.DowloadSound)
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
