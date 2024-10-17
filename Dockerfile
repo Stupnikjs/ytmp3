@@ -2,8 +2,8 @@
 FROM golang:1.22-alpine
 WORKDIR /app
 
-RUN apt update -y 
-RUN apt-get install ffmpeg 
+RUN apk update 
+RUN apk add --no-cache ffmpeg
 
 COPY go.mod .
 COPY go.sum .

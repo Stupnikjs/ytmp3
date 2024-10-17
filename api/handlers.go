@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -51,8 +52,13 @@ func (app *Application) PostVideoId(w http.ResponseWriter, r *http.Request) {
 	body := string(reader)
 
 	eqlsplit := strings.Split(body, "=")
-
-	err, filename := FFmpegWrap(eqlsplit[1])
+	if len(eqlsplit) < 1 {
+		w.Write([]byte(`
+		<p> error malformed </p>
+		`))
+	}
+	filename, err := FFmpegWrap(eqlsplit[1])
+	filename = filename[len(DownloadDir):]
 	if err != nil {
 		w.Write([]byte(`<div> Something wrong happened </div>`))
 		return
@@ -60,7 +66,7 @@ func (app *Application) PostVideoId(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(
 		fmt.Sprintf(`
 		<p>Dowload mp3</p>
-		<a href="/download/%s"> 
+		<a href="/fileupload/%s"> 
 			  %s 
 		</a>
 		`, filename, filename)))
@@ -69,19 +75,23 @@ func (app *Application) PostVideoId(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) DowloadSound(w http.ResponseWriter, r *http.Request) {
-	filename := chi.URLParam(r, "name")
-	file, err := os.Open(filename)
-
+	filename := chi.URLParam(r, "filename")
+	file, err := os.Open(filepath.Join(DownloadDir, filename))
+	defer file.Close()
+	defer os.RemoveAll(filepath.Join(DownloadDir, filename))
 	// verifier que le filename est bien present
 	if err != nil {
-		fmt.Println(err)
+		w.Write([]byte(err.Error()))
+		return
 	}
-
 	bytes, err := io.ReadAll(file)
-	defer os.Remove(filename)
-
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
 	w.Header().Set("Content-Disposition", "attachement")
 	w.Header().Set("filename-parm", fmt.Sprintf("filename=%s", filename))
 	w.Write(bytes)
+	return
 
 }

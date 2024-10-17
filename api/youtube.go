@@ -1,15 +1,17 @@
 package api
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/kkdai/youtube/v2"
 )
 
-var DowloadDir = "/static/download"
+var DownloadDir = "static/download/"
 
 func ExampleClient(videoId string) (string, error) {
 
@@ -31,13 +33,15 @@ func ExampleClient(videoId string) (string, error) {
 
 	// ADD THE PATH TO STATIC FILES
 
-	maxLength := 20
+	maxLength := 50
 	if len(video.Title) > maxLength {
 		filename = video.Title[0:maxLength]
 	}
 
-	file, err := os.Create(filename + ".mp4")
+	filePath := filepath.Join(DownloadDir, filename+".mp4")
+	file, err := os.Create(filePath)
 	if err != nil {
+		fmt.Println("here", err)
 		return "", err
 	}
 	defer file.Close()
@@ -50,18 +54,14 @@ func ExampleClient(videoId string) (string, error) {
 
 }
 
-func FFmpegWrap(arg string) (error, string) {
+func FFmpegWrap(arg string) (string, error) {
 	filename, err := ExampleClient(arg)
 	if err != nil {
-		return err, ""
+		return "", err
 	}
 	woutMp4 := strings.Split(filename, ".")[0]
-
 	cmd := exec.Command("ffmpeg", "-i", filename, "-q:a", "0", "-map", "a", woutMp4+".mp3")
 	cmd.Run()
-
-	// not working
-	cmd = exec.Command("rm", "-r", filename)
-	cmd.Run()
-	return nil, woutMp4 + ".mp3"
+	defer os.RemoveAll(filename)
+	return woutMp4 + ".mp3", nil
 }

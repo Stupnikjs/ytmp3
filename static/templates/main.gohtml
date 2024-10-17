@@ -4,19 +4,33 @@
   
 
             <section>
-                <div id="loadingElement" style="display: none;">
-                    loading mp3 
-                </div>
+               
                 <h1> Youtube to mp3 </h1>
+                <div id="spinner" > Spinn </div>
                 <div id="formDiv">
-                    <form id="videoIdForm" hx-post="/video/id" hx-indicator="loadingElement">
+                    <form id="videoIdForm" hx-post="/video/id" hx-indicator="#spinner">
                         <label> Enter video id </label>
                         <input type="text" name="videoid" id="videoIdInput">
                         <button type="submit"> Sumbit</button>
                     </form>
                 </div>
-                
             </section>
+            <script>
+    // Show loader on HTMX request
+    document.body.addEventListener('htmx:request', function() {
+      document.getElementById('loader').style.display = 'block';
+    });
+
+    // Hide loader when HTMX request completes (after content is loaded)
+    document.body.addEventListener('htmx:load', function() {
+      document.getElementById('loader').style.display = 'none';
+    });
+
+    // Also hide the loader on an error or failure
+    document.body.addEventListener('htmx:error', function() {
+      document.getElementById('loader').style.display = 'none';
+    });
+  </script>
                 
                 
           
