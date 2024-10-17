@@ -3,15 +3,23 @@
 {{define "content"}}
   
 
-            <div></div>
+            <section>
+                <div id="loadingElement" style="display: none;">
+                    loading mp3 
+                </div>
                 <h1> Youtube to mp3 </h1>
-                <form id="videoIdForm" hx-post="/video/id">
-                    <label> Enter video id </label>
-                    <input type="text" name="videoid" id="videoIdInput">
-                    <button type="submit"> Sumbit</button>
-                </form>
+                <div id="formDiv">
+                    <form id="videoIdForm" hx-post="/video/id" hx-indicator="loadingElement">
+                        <label> Enter video id </label>
+                        <input type="text" name="videoid" id="videoIdInput">
+                        <button type="submit"> Sumbit</button>
+                    </form>
+                </div>
                 
-            </div>
+            </section>
+                
+                
+          
     
     
     

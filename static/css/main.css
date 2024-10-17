@@ -34,7 +34,7 @@ body {
 }
 
 h1 {
-  color: green; 
+  color: rgb(66, 76, 179); 
   background-color: aliceblue; 
   padding: 0.5rem; 
 }
@@ -68,15 +68,20 @@ h1 {
   height: max-content;
 }
 
+
+#formDiv {
+  background: linear-gradient(lightblue);
+  padding: 1rem; 
+  height: 20vh;
+}
 #videoIdForm {
   height: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
 }
-#videoIdInput {
-  outline: 1rem green;
+
+#videoIdInput, #videoIdForm > button {
   width: 40%;
 }
 

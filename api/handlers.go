@@ -52,11 +52,16 @@ func (app *Application) PostVideoId(w http.ResponseWriter, r *http.Request) {
 
 	eqlsplit := strings.Split(body, "=")
 
-	filename := FFmpegWrap(eqlsplit[1])
+	err, filename := FFmpegWrap(eqlsplit[1])
+	if err != nil {
+		w.Write([]byte(`<div> Something wrong happened </div>`))
+		return
+	}
 	w.Write([]byte(
 		fmt.Sprintf(`
+		<p>Dowload mp3</p>
 		<a href="/download/%s"> 
-			  %s  Download 
+			  %s 
 		</a>
 		`, filename, filename)))
 	return
@@ -67,13 +72,14 @@ func (app *Application) DowloadSound(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "name")
 	file, err := os.Open(filename)
 
+	// verifier que le filename est bien present
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	bytes, err := io.ReadAll(file)
-
 	defer os.Remove(filename)
+
 	w.Header().Set("Content-Disposition", "attachement")
 	w.Header().Set("filename-parm", fmt.Sprintf("filename=%s", filename))
 	w.Write(bytes)
