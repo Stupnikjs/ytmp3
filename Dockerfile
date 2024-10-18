@@ -10,7 +10,6 @@ COPY go.sum .
 
 COPY . .
 
-# google credentials.json
 
 # Download all dependencies
 RUN go mod download

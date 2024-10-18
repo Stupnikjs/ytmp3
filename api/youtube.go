@@ -38,7 +38,8 @@ func ExampleClient(videoId string) (string, error) {
 		filename = video.Title[0:maxLength]
 	}
 
-	filePath := filepath.Join(DownloadDir, filename+".mp4")
+	tempDir, err := os.MkdirTemp(DownloadDir, videoId)
+	filePath := filepath.Join(tempDir, filename+".mp4")
 	file, err := os.Create(filePath)
 	if err != nil {
 		fmt.Println("here", err)
@@ -50,7 +51,8 @@ func ExampleClient(videoId string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return file.Name(), nil
+	fmt.Println("full", filePath)
+	return filePath, nil
 
 }
 
@@ -62,6 +64,6 @@ func FFmpegWrap(arg string) (string, error) {
 	woutMp4 := strings.Split(filename, ".")[0]
 	cmd := exec.Command("ffmpeg", "-i", filename, "-q:a", "0", "-map", "a", woutMp4+".mp3")
 	cmd.Run()
-	defer os.RemoveAll(filename)
+	fmt.Println(woutMp4)
 	return woutMp4 + ".mp3", nil
 }

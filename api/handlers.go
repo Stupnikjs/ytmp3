@@ -57,41 +57,60 @@ func (app *Application) PostVideoId(w http.ResponseWriter, r *http.Request) {
 		<p> error malformed </p>
 		`))
 	}
+
 	filename, err := FFmpegWrap(eqlsplit[1])
-	filename = filename[len(DownloadDir):]
+
 	if err != nil {
 		w.Write([]byte(`<div> Something wrong happened </div>`))
 		return
 	}
+	tempdir := strings.Split(filename, "\\")[2]
+
 	w.Write([]byte(
 		fmt.Sprintf(`
 		<p>Dowload mp3</p>
 		<a href="/fileupload/%s"> 
 			  %s 
 		</a>
-		`, filename, filename)))
+		`, tempdir, filename)))
 	return
 
 }
 
 func (app *Application) DowloadSound(w http.ResponseWriter, r *http.Request) {
-	filename := chi.URLParam(r, "filename")
-	file, err := os.Open(filepath.Join(DownloadDir, filename))
-	defer file.Close()
-	defer os.RemoveAll(filepath.Join(DownloadDir, filename))
-	// verifier que le filename est bien present
+	tempDir := chi.URLParam(r, "tempdir") + "\\"
+	path := filepath.Join(DownloadDir, tempDir)
+	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		w.Write([]byte("error opening tempdir"))
 		return
 	}
-	bytes, err := io.ReadAll(file)
-	if err != nil {
-		w.Write([]byte(err.Error()))
+	for i, e := range dirEntry {
+		if i > 0 {
+			break
+		}
+		filep := filepath.Join(path, e.Name())
+		file, err := os.Open(filep)
+		if err != nil {
+			w.Write([]byte("error opening file"))
+			return
+		}
+		defer file.Close()
+		bytes, err := io.ReadAll(file)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			return
+		}
+		w.Header().Set("Content-Disposition", "attachement")
+		w.Header().Set("filename-parm", fmt.Sprintf("filename=%s", file.Name()))
+		w.Write(bytes)
+		// for some reason delete the temp created before
+		err = os.RemoveAll(DownloadDir)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			return
+		}
 		return
 	}
-	w.Header().Set("Content-Disposition", "attachement")
-	w.Header().Set("filename-parm", fmt.Sprintf("filename=%s", filename))
-	w.Write(bytes)
-	return
 
 }
