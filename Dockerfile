@@ -3,6 +3,7 @@ FROM golang:1.22-alpine
 WORKDIR /app
 
 RUN apk update 
+RUN apk --no-cache add ca-certificates
 RUN apk add --no-cache ffmpeg
 
 COPY go.mod .
